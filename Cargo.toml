@@ -1,0 +1,35 @@
+[package]
+name = "q_screens"
+version = "0.1.0"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+repository = "https://github.com/cubething-qproj/q_screens"
+description = "Screens extension for bevy"
+
+[dependencies]
+# bevy
+bevy = {version="0.18", features=["default_app", "default_platform", "common_api"]}
+
+# not bevy
+tiny_bail = "0.7"
+itertools = "0.14.0"
+thiserror = "2.0.12"
+bitflags = "2.9.3"
+serde = { version = "1.0.219", features = ["derive"] }
+anyhow = "1.0.99"
+strum = { version = "0.27.2", features = ["derive"] }
+variadics_please = "1.1.0"
+
+[dev-dependencies]
+# just for a few inspector things... should really fork them
+bevy-inspector-egui = "0.36"
+bevy_asset_loader = "0.25"
+
+# local
+q_test_harness = {path = "../../q_test_harness/main", version = "^0.1"}
+
+[lints]
+rust.unexpected_cfgs = { level = "warn", check-cfg = ["cfg(bevy_lint)"] }
+clippy.too_many_arguments = "allow"
+clippy.type_complexity = "allow"
+clippy.nonstandard_macro_braces = "warn"
