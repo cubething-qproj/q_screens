@@ -26,7 +26,7 @@ bevy-inspector-egui = "0.36"
 bevy_asset_loader = "0.25"
 
 # local
-q_test_harness = {path = "../../q_test_harness/main", version = "^0.1"}
+q_test_harness = {path = "../../q_test_harness/active", version = "^0.1"}
 
 [lints]
 rust.unexpected_cfgs = { level = "warn", check-cfg = ["cfg(bevy_lint)"] }
