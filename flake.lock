@@ -60,46 +60,20 @@
       "inputs": {
         "bevy_cli": "bevy_cli",
         "flake-utils": "flake-utils_2",
-        "nixgl": "nixgl",
         "nixpkgs": "nixpkgs_2",
         "rust-overlay": "rust-overlay_2"
       },
       "locked": {
-        "lastModified": 1779044237,
-        "narHash": "sha256-+/L3rag0WMFY8Q4Uvgckka/oZRWNTRaf1eJvSbxZp5Y=",
+        "lastModified": 1779235969,
+        "narHash": "sha256-SKBtzpLFApQGqbMGFg5r6djMiz5jSqbbOSyN37ajVLs=",
         "owner": "cubething-qproj",
         "repo": "infra",
-        "rev": "a1d45c67c2fafb58ee12d8c358587703bf8bd627",
+        "rev": "f9b60767925c365af6cacac2df8c818620a807ad",
         "type": "github"
       },
       "original": {
         "owner": "cubething-qproj",
         "repo": "infra",
-        "type": "github"
-      }
-    },
-    "nixgl": {
-      "inputs": {
-        "flake-utils": [
-          "infra",
-          "flake-utils"
-        ],
-        "nixpkgs": [
-          "infra",
-          "nixpkgs"
-        ]
-      },
-      "locked": {
-        "lastModified": 1762090880,
-        "narHash": "sha256-fbRQzIGPkjZa83MowjbD2ALaJf9y6KMDdJBQMKFeY/8=",
-        "owner": "nix-community",
-        "repo": "nixGL",
-        "rev": "b6105297e6f0cd041670c3e8628394d4ee247ed5",
-        "type": "github"
-      },
-      "original": {
-        "owner": "nix-community",
-        "repo": "nixGL",
         "type": "github"
       }
     },
