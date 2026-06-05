@@ -1,76 +1,65 @@
 # ------------------------------------------
 # SPDX-License-Identifier: MIT OR Apache-2.0
 # -------------------------------- 𝒒𝒑𝒓𝒐𝒋 --
-#
-# Downstream `justfile` prelude. NOT a standalone justfile -- the sync
-# workflow concatenates this file with `shared.just` and writes the
-# combined output as `justfile` in each downstream repo. This keeps the
-# recipe definitions (in shared.just) as the single source of truth
-# while letting downstreams ship a single justfile rather than a
-# justfile + shared.just pair.
-#
-# `qproj` resolves to a `uvx --refresh` invocation that pulls the
-# qproj-scripts CLI directly from the infra repo's `main` branch. The
-# `--refresh` flag makes uvx re-resolve `main` to the current commit on
-# every invocation; if the commit hasn't moved, the cached install is
-# reused (no re-download).
-#
-# Override the ref by exporting `QPROJ_SCRIPTS_REF` (e.g. a commit SHA or
-# branch name) -- useful for bisecting or temporarily holding a downstream
-# back from upstream changes.
 
-QPROJ_REF := env_var_or_default("QPROJ_SCRIPTS_REF", "main")
-QPROJ_GIT_URL := "git+https://github.com/cubething-qproj/infra.git@" + QPROJ_REF + "#subdirectory=scripts"
-qproj := "uvx --refresh --from " + quote(QPROJ_GIT_URL) + " qproj-scripts"
-# ------------------------------------------
-# SPDX-License-Identifier: MIT OR Apache-2.0
-# -------------------------------- 𝒒𝒑𝒓𝒐𝒋 --
-#
-# Recipes that wrap the qproj-scripts CLI. Consumers of this file
-# (metarepo.just, downstream.just) must define `qproj` themselves --
-# typically as `uv run --project <local-scripts>` for the metarepo and
-# `uvx --from git+...` for downstreams.
+qproj := "qproj-scripts"
+NIXGL := env("NIXGL", "nixVulkanNvidia")
+
+_default:
+    just --list
 
 # Build the workspace.
+[working-directory: '.']
 build *args:
     {{ qproj }} build {{ args }}
 
 # Run the application.
+[working-directory: '.']
 play *args:
-    {{ qproj }} play {{ args }}
+    nix run --impure github:nix-community/nixGL#{{ NIXGL }} -- \
+        {{ qproj }} play {{ args }}
 
 # Lint with Clippy and bevy_lint.
+[working-directory: '.']
 check *args:
     {{ qproj }} check {{ args }}
 
 # Run clippy.
+[working-directory: '.']
 clippy *args:
     {{ qproj }} clippy {{ args }}
 
 # Run bevy_lint.
+[working-directory: '.']
 bevy-lint *args:
     {{ qproj }} bevy-lint {{ args }}
 
 # Check dependencies with cargo-deny.
+[working-directory: '.']
 deny:
     {{ qproj }} deny
 
 # Run tests via cargo-nextest.
+[working-directory: '.']
 test *args:
     {{ qproj }} test {{ args }}
 
 # Generate test coverage report.
+[working-directory: '.']
 coverage *args:
     {{ qproj }} coverage {{ args }}
 
 # Fix all fixable issues.
+[working-directory: '.']
 fix *args:
     {{ qproj }} fix {{ args }}
 
 # Test CI locally with act.
+[working-directory: '.']
 ci *args:
     {{ qproj }} ci {{ args }}
 
 # Emit Clippy + bevy_lint diagnostics as JSON for rust-analyzer.
+[working-directory: '.']
 ra-check *args:
     {{ qproj }} ra-check {{ args }}
