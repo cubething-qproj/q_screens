@@ -228,6 +228,11 @@ fn clean_up_scoped_entities<S: Screen>(
     mut screen_data: ScreenInfoMut<S>,
     // Any entity which is (explicitly marked as ScreenScoped, or is _not_ marked
     // as persistent) _and_ is not a top-level observer
+    //
+    // `Without<IsResource>` excludes the 0.19 resource-entity machinery: in
+    // 0.19 resources are stored as components on dedicated entities tagged
+    // with `IsResource`. Without this filter, `Without<Persistent>` matches
+    // every resource entity and cleanup would despawn `Schedules` et al.
     screen_scoped: Query<
         Entity,
         (
@@ -235,6 +240,7 @@ fn clean_up_scoped_entities<S: Screen>(
                 With<ScreenScoped>,  // is explicitly screen-scoped
                 Without<Persistent>, // is explicitly persistent
             )>,
+            Without<bevy::ecs::resource::IsResource>,
         ),
     >,
     top_levels: Query<

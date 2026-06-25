@@ -446,7 +446,7 @@ mod system_params {
             world: &mut World,
         ) {
             component_access_set
-                .add_unfiltered_resource_read(world.resource_id::<ScreenRegistry>().unwrap());
+                .add_resource_read(world.component_id::<ScreenRegistry>().unwrap());
         }
 
         unsafe fn get_param<'world, 'state>(
@@ -454,7 +454,7 @@ mod system_params {
             _system_meta: &bevy::ecs::system::SystemMeta,
             world: bevy::ecs::world::unsafe_world_cell::UnsafeWorldCell<'world>,
             _change_tick: bevy::ecs::change_detection::Tick,
-        ) -> Self::Item<'world, 'state> {
+        ) -> Result<Self::Item<'world, 'state>, bevy::ecs::system::SystemParamValidationError> {
             let registry = unsafe { world.get_resource::<ScreenRegistry>().unwrap() };
             let idx = registry.get(&TypeId::of::<S>()).unwrap();
             let data_res = unsafe { world.get_resource::<ScreenData>().unwrap() };
@@ -462,10 +462,10 @@ mod system_params {
                 .get(idx)
                 .map_err(|_| ScreenError::NoSuchScreen(S::name()))
                 .unwrap();
-            ScreenInfoRef {
+            Ok(ScreenInfoRef {
                 _ghost: PhantomData,
                 data,
-            }
+            })
         }
     }
     unsafe impl<'w, S: Screen> ReadOnlySystemParam for ScreenInfoRef<'w, S> {}
@@ -520,7 +520,7 @@ mod system_params {
             world: &mut World,
         ) {
             component_access_set
-                .add_unfiltered_resource_write(world.resource_id::<ScreenRegistry>().unwrap());
+                .add_resource_write(world.component_id::<ScreenRegistry>().unwrap());
         }
 
         unsafe fn get_param<'world, 'state>(
@@ -528,7 +528,7 @@ mod system_params {
             _system_meta: &bevy::ecs::system::SystemMeta,
             world: bevy::ecs::world::unsafe_world_cell::UnsafeWorldCell<'world>,
             change_tick: bevy::ecs::change_detection::Tick,
-        ) -> Self::Item<'world, 'state> {
+        ) -> Result<Self::Item<'world, 'state>, bevy::ecs::system::SystemParamValidationError> {
             let registry = unsafe { world.get_resource_mut::<ScreenRegistry>().unwrap() };
             let data_res = unsafe { world.get_resource_mut::<ScreenData>().unwrap() };
             let screen_id = registry
@@ -536,11 +536,11 @@ mod system_params {
                 .map_err(|_| ScreenError::NoSuchScreen(S::name()))
                 .unwrap();
             let data = data_res.map_unchanged(|res| res.get_mut(screen_id).unwrap());
-            Self::Item {
+            Ok(Self::Item {
                 data,
                 _ghost: PhantomData,
                 change_tick,
-            }
+            })
         }
     }
 
@@ -570,13 +570,13 @@ mod system_params {
             _system_meta: &bevy::ecs::system::SystemMeta,
             world: bevy::ecs::world::unsafe_world_cell::UnsafeWorldCell<'world>,
             _change_tick: Tick,
-        ) -> Self::Item<'world, 'state> {
+        ) -> Result<Self::Item<'world, 'state>, bevy::ecs::system::SystemParamValidationError> {
             let registry = unsafe { world.get_resource::<ScreenRegistry>().unwrap() };
             let id = registry.get(&TypeId::of::<S>()).unwrap();
-            Self {
+            Ok(Self {
                 id,
                 _ghost: PhantomData,
-            }
+            })
         }
     }
     unsafe impl<S: Screen> ReadOnlySystemParam for ScreenIdFor<S> {}
