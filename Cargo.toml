@@ -9,6 +9,8 @@ description = "Screens extension for bevy"
 [dependencies]
 # bevy
 bevy = {version="0.19", features=["default_app", "default_platform", "common_api"]}
+# 0.12.2 uses syn 3, while Bevy's macro utilities use syn 2.
+encase = "=0.12.1"
 
 # not bevy
 tiny_bail = "0.7"
@@ -33,16 +35,6 @@ rust.unexpected_cfgs = { level = "warn", check-cfg = ["cfg(bevy_lint)"] }
 clippy.too_many_arguments = "allow"
 clippy.type_complexity = "allow"
 clippy.nonstandard_macro_braces = "warn"
-
-[workspace]
-resolver = "3"
-
-[workspace.lints]
-rust.unexpected_cfgs = { level = "warn", check-cfg = ["cfg(bevy_lint)"] }
-clippy.too_many_arguments = "allow"
-clippy.type_complexity = "allow"
-clippy.nonstandard_macro_braces = "warn"
-
 
 [profile.dev.package."*"]
 opt-level = 3
