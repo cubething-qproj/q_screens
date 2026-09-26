@@ -382,6 +382,7 @@ version = "0.19.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "4bfadbebfc6599aa59289b754ac30023959854304f3d393da2cf62bb3cd5df8f"
 dependencies = [
+ "bevy_dylib",
  "bevy_internal",
 ]
 
@@ -793,6 +794,15 @@ dependencies = [
  "log",
  "serde",
  "sysinfo",
+]
+
+[[package]]
+name = "bevy_dylib"
+version = "0.19.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "e3c03a128bac8b59a8699b81038b574e3cfa33dfae18e375d46be028d3d13c0e"
+dependencies = [
+ "bevy_internal",
 ]
 
 [[package]]
@@ -2587,9 +2597,9 @@ dependencies = [
 
 [[package]]
 name = "encase"
-version = "0.12.2"
+version = "0.12.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "65f68eb0b99ee6b831fc4d4ab662cb364cdd16dee21349beeeed2f9d62b4ca18"
+checksum = "b1acbc46b960480c4959213714511e22f9a2e0d361520693bcf5057b5924f53e"
 dependencies = [
  "const_panic",
  "encase_derive",
@@ -2598,22 +2608,22 @@ dependencies = [
 
 [[package]]
 name = "encase_derive"
-version = "0.12.2"
+version = "0.12.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "94cc8c76cfe0a0fefd1522f79ae62946c159290fbe816b3a0a7662bcce187587"
+checksum = "1e30d38c47336a0afbdfde297b442944041cf6dccbb1a79eceea16abfb27a92a"
 dependencies = [
  "encase_derive_impl",
 ]
 
 [[package]]
 name = "encase_derive_impl"
-version = "0.12.2"
+version = "0.12.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "642108852530056c9efda5198caad6f25d28ae731c9653e8d9144ba097a4fec9"
+checksum = "495d24abe406f090f2ba8fc362ecaa8a001e192522aa75eae7b144163c3235ff"
 dependencies = [
  "proc-macro2",
  "quote",
- "syn 3.0.6",
+ "syn 2.0.119",
 ]
 
 [[package]]
@@ -4625,6 +4635,7 @@ dependencies = [
  "bevy-inspector-egui",
  "bevy_asset_loader",
  "bitflags 2.13.2",
+ "encase",
  "itertools",
  "q_test_harness",
  "serde",
