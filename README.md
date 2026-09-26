@@ -3,7 +3,7 @@
 </div>
 
 
-[![Coveralls](https://img.shields.io/coverallsCoverage/github/ada-x64/qproj?branch=q_screens)](https://coveralls.io/github/ada-x64/qproj?branch=q_screens)
+[![Coverage Status](https://coveralls.io/repos/github/cubething-qproj/q_screens/badge.svg)](https://coveralls.io/github/cubething-qproj/q_screens)
 
 Screen implementation for Bevy.
 
