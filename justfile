@@ -63,3 +63,9 @@ ci *args:
 [working-directory: '.']
 ra-check *args:
     {{ qproj }} ra-check {{ args }}
+
+# List the Bevy spawn sites added or removed between two versions (<old> <new>),
+# to audit the persistent types in src/persistent.rs.
+[working-directory: '.']
+audit-bevy-spawns *args:
+    python3 scripts/audit_bevy_spawns.py {{ args }}

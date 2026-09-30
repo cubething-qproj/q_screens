@@ -8,6 +8,7 @@
 use prelude::*;
 /// Resources, components, states, etc.
 pub mod data;
+pub mod persistent;
 mod plugin;
 /// The [ScreenScopeBuilder] and friends.
 pub mod scope;
@@ -18,12 +19,12 @@ pub mod trait_impl;
 /// The main export.
 pub mod prelude {
     pub use super::data::*;
+    pub use super::persistent::*;
     pub use super::plugin::*;
     pub use super::scope::*;
     pub(crate) use super::systems::*;
     pub use super::trait_impl::*;
     pub(crate) use bevy::prelude::*;
-    pub(crate) use itertools::Itertools;
     pub(crate) use std::marker::PhantomData;
     pub(crate) use tiny_bail::prelude::*;
 }

@@ -17,6 +17,21 @@ _This continues the work started [here.](https://github.com/ada-x64/tfw)_
 - [x] Friendly and bevyish API
 - [x] Well-tested
 
+## Screen scoping
+
+When a screen changes, every entity that isn't `Persistent` is despawned.
+`ScreenPlugin` exempts Bevy's engine-internal entities (a few, from gizmos and
+dev-tools overlays, aren't covered yet), and apps can exempt whole component
+types with `app.register_persistent_type::<T>(scope)`. See the `persistent`
+module docs for details.
+
+Some engine types come from optional Bevy crates. Enable the matching feature
+for each one your app uses:
+
+- `bevy_picking`: pointers (including app-spawned `PointerId::Custom` pointers,
+  which then outlive screens)
+- `bevy_gilrs`: gamepads
+
 ## About the bird
 
 "Like all bowerbirds, the satin bowerbird shows highly complex courtship behaviour. ... Males build specialised stick structures, called bowers, which they decorate with blue, yellow, and shiny objects, including berries, flowers, snail shells, and plastic items such as ballpoint pens, drinking straws and clothes pegs." ([wikipedia](https://en.wikipedia.org/wiki/Satin_bowerbird))
