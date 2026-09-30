@@ -2,7 +2,7 @@ use std::any::TypeId;
 
 pub use crate::prelude::*;
 use bevy::{
-    ecs::system::{ScheduleSystem, SystemIdMarker},
+    ecs::{query::QueryBuilder, system::ScheduleSystem},
     platform::collections::HashMap,
 };
 use strum::IntoEnumIterator;
@@ -23,7 +23,8 @@ impl RegisterScreen for App {
 /// Use it to add scoped systems to your screen. These scoped systems will only run
 /// when the screen is in the [ScreenState] analgous to the specified [ScreenSchedule].
 ///
-/// When a screen is unloaded, it will clean up all entities marked as non-[Persistent] entities.
+/// When a screen is unloaded, it will clean up all entities marked as non-[Persistent] entities,
+/// except those whose types are registered in [PersistentTypes].
 /// Entities can be marked as [ScreenScoped] to opt out of persistence. This is primarily useful
 /// when propagating entity persistence, using [Propagate(Persistence).](bevy::app::Propagate)
 ///
@@ -223,42 +224,43 @@ where
     }
 }
 
-fn clean_up_scoped_entities<S: Screen>(
-    mut commands: Commands,
-    mut screen_data: ScreenInfoMut<S>,
-    // Any entity which is (explicitly marked as ScreenScoped, or is _not_ marked
-    // as persistent) _and_ is not a top-level observer
-    //
-    // `Without<IsResource>` excludes the 0.19 resource-entity machinery: in
-    // 0.19 resources are stored as components on dedicated entities tagged
-    // with `IsResource`. Without this filter, `Without<Persistent>` matches
-    // every resource entity and cleanup would despawn `Schedules` et al.
-    screen_scoped: Query<
-        Entity,
-        (
-            Or<(
-                With<ScreenScoped>,  // is explicitly screen-scoped
-                Without<Persistent>, // is explicitly persistent
-            )>,
-            Without<bevy::ecs::resource::IsResource>,
-        ),
-    >,
-    top_levels: Query<
-        Entity,
-        (
-            Or<(With<Observer>, With<Window>, With<SystemIdMarker>)>, // there are probably others i'm missing
-            Without<ChildOf>,
-        ),
-    >,
-) {
-    screen_scoped
-        .iter()
-        .filter(|c| !top_levels.iter().contains(c))
-        .for_each(|e| {
-            if let Ok(mut cmds) = commands.get_entity(e) {
-                cmds.clear(); // removes all relationship components
-                cmds.despawn();
-            }
+fn clean_up_scoped_entities<S: Screen>(world: &mut World) {
+    for entity in scoped_entities(world) {
+        if let Ok(mut entity) = world.get_entity_mut(entity) {
+            entity.clear(); // removes all relationship components
+            entity.despawn();
+        }
+    }
+    // If `ScreenInfoMut` fails to validate, this logs and the screen stays in
+    // `Cleanup`, as it did when cleanup was a regular system.
+    r!(world.run_system_cached(|mut data: ScreenInfoMut<S>| data.finish_cleanup()));
+}
+
+/// Entities that screen cleanup would despawn: any entity which is (explicitly
+/// marked as ScreenScoped, or is _not_ marked as persistent) _and_ has no
+/// registered persistent type in that type's scope (see [PersistentTypes]:
+/// `TopLevel` types only exempt unparented entities). Built at runtime so apps
+/// can register their own types.
+pub(crate) fn scoped_entities(world: &mut World) -> Vec<Entity> {
+    let types = world.resource::<PersistentTypes>();
+    let (top_level, anywhere) = (types.top_level().to_vec(), types.anywhere().to_vec());
+    let mut builder = QueryBuilder::<Entity>::new(world);
+    builder.filter::<Or<(With<ScreenScoped>, Without<Persistent>)>>();
+    for id in anywhere {
+        builder.without_id(id);
+    }
+    if !top_level.is_empty() {
+        // "for every TopLevel T: lacks T, or has a parent", factored as
+        // "has a parent, or lacks every TopLevel T" so the filter stays a
+        // constant size instead of doubling per type.
+        builder.or(|b| {
+            b.with::<ChildOf>();
+            b.and(|b| {
+                for &id in &top_level {
+                    b.without_id(id);
+                }
+            });
         });
-    screen_data.finish_cleanup();
+    }
+    builder.build().iter(world).collect()
 }

@@ -12,6 +12,7 @@ impl Plugin for ScreenPlugin {
         app.init_resource::<ScreenData>();
         app.init_resource::<InitialScreen>();
         app.init_resource::<CurrentScreen>();
+        app.add_plugins(crate::persistent::plugin);
         app.add_message::<SwitchToScreenMsg>();
         app.add_plugins((
             HierarchyPropagatePlugin::<Persistent>::new(PostUpdate),

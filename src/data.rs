@@ -66,8 +66,10 @@ mod general_api {
     }
 
     /// Scopes an entity to the current screen. The entity will be cleaned up when
-    /// the [Screen] state changes. By default, all entities _except_ top-level
-    /// [Observer] and [Window] components are screen-scoped.
+    /// the [Screen] state changes. By default, every entity that isn't
+    /// [Persistent] is screen-scoped, except entities whose types are registered
+    /// in [PersistentTypes] (engine internals such as top-level [Observer]s,
+    /// windows, monitors and pointers).
     ///
     /// Note: This is effectively used to skip the propagation of the
     /// [Persistent] component. Since screen scoping is the default behavior, it
@@ -76,8 +78,10 @@ mod general_api {
     pub struct ScreenScoped;
 
     /// Marks an entity as screen-persistent, i.e., this entity will _not_ be
-    /// automatically cleaned up when the screen changes. By default, all entites
-    /// _except_ top-level [Observer] and [Window] components and are screen-scoped.
+    /// automatically cleaned up when the screen changes. By default, every other
+    /// entity is screen-scoped, except entities whose types are registered in
+    /// [PersistentTypes]. To opt a whole component type out, register it there
+    /// instead of adding this marker.
     ///
     /// In order to mark the children of this component as Persistent, you should
     /// use the [Propagate](bevy::app::Propagate) component.
