@@ -1,7 +1,4 @@
 #![doc = include_str!("../README.md")]
-#![feature(register_tool)]
-#![register_tool(bevy)]
-#![allow(bevy::panicking_methods)]
 #![deny(missing_docs)]
 
 #[allow(unused_imports, reason = "used in docs")]
