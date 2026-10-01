@@ -19,20 +19,15 @@ play *args:
     nix run --impure github:nix-community/nixGL#{{ NIXGL }} -- \
         {{ qproj }} play {{ args }}
 
-# Lint with Clippy and bevy_lint.
+# Lint with Clippy.
 [working-directory: '.']
 check *args:
-    {{ qproj }} check {{ args }}
+    cargo clippy {{ args }}
 
 # Run clippy.
 [working-directory: '.']
 clippy *args:
-    {{ qproj }} clippy {{ args }}
-
-# Run bevy_lint.
-[working-directory: '.']
-bevy-lint *args:
-    {{ qproj }} bevy-lint {{ args }}
+    cargo clippy {{ args }}
 
 # Check dependencies with cargo-deny.
 [working-directory: '.']
@@ -52,17 +47,12 @@ coverage *args:
 # Fix all fixable issues.
 [working-directory: '.']
 fix *args:
-    {{ qproj }} fix {{ args }}
+    cargo clippy --fix {{ args }}
 
 # Test CI locally with act.
 [working-directory: '.']
 ci *args:
     {{ qproj }} ci {{ args }}
-
-# Emit Clippy + bevy_lint diagnostics as JSON for rust-analyzer.
-[working-directory: '.']
-ra-check *args:
-    {{ qproj }} ra-check {{ args }}
 
 # List the Bevy spawn sites added or removed between two versions (<old> <new>),
 # to audit the persistent types in src/persistent.rs.
