@@ -3,7 +3,6 @@
 # -------------------------------- 𝒒𝒑𝒓𝒐𝒋 --
 
 qproj := "qproj-scripts"
-NIXGL := env("NIXGL", "nixVulkanNvidia")
 
 _default:
     just --list
@@ -16,8 +15,7 @@ build *args:
 # Run the application.
 [working-directory: '.']
 play *args:
-    nix run --impure github:nix-community/nixGL#{{ NIXGL }} -- \
-        {{ qproj }} play {{ args }}
+    {{ qproj }} play {{ args }}
 
 # Lint with Clippy.
 [working-directory: '.']
