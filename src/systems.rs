@@ -102,22 +102,11 @@ fn run_schedules(mut data: ResMut<ScreenData>, mut commands: Commands, tick: Sys
                     info.changed_at = tick.this_run();
                 }
                 if matches!(info.load_strategy(), LoadStrategy::Nonblocking) {
-                    commands.run_schedule(ScreenScheduleLabel::from_id(
-                        ScreenSchedule::Update,
-                        info.type_id(),
-                    ));
+                    run_update_schedule(&mut commands, info, ScreenSchedule::Update);
                 }
             }
             ScreenState::Ready => {
-                commands.run_schedule(ScreenScheduleLabel::from_id(
-                    ScreenSchedule::Update,
-                    info.type_id(),
-                ));
-                if info.needs_update {
-                    commands.run_schedule(OnScreenReady(info.type_id()));
-                    info.needs_update = false;
-                    info.changed_at = tick.this_run();
-                }
+                run_update_schedule(&mut commands, info, ScreenSchedule::Update);
             }
             ScreenState::Unloading => {
                 commands.run_schedule(ScreenScheduleLabel::from_id(
@@ -146,21 +135,40 @@ fn run_fixed_schedules(mut registry: ResMut<ScreenData>, mut commands: Commands)
         match data.state() {
             ScreenState::Loading => {
                 if matches!(data.load_strategy(), LoadStrategy::Nonblocking) {
-                    commands.run_schedule(ScreenScheduleLabel::from_id(
-                        ScreenSchedule::FixedUpdate,
-                        data.type_id(),
-                    ));
+                    run_update_schedule(&mut commands, data, ScreenSchedule::FixedUpdate);
                 }
             }
             ScreenState::Ready => {
-                commands.run_schedule(ScreenScheduleLabel::from_id(
-                    ScreenSchedule::FixedUpdate,
-                    data.type_id(),
-                ));
+                run_update_schedule(&mut commands, data, ScreenSchedule::FixedUpdate);
             }
             _ => {}
         }
     }
+}
+
+/// Completes pending Ready initialization before either screen update schedule.
+/// Check at command execution: a queued Loading schedule can finish loading first.
+fn run_update_schedule(commands: &mut Commands, info: &ScreenInfo, schedule: ScreenSchedule) {
+    let screen_id = info.screen_id();
+    let type_id = info.type_id();
+    commands.queue(move |world: &mut World| {
+        let tick = world.change_tick();
+        let needs_ready = {
+            let mut data = world.resource_mut::<ScreenData>();
+            let info = r!(data.get_mut(screen_id));
+            if info.state() == ScreenState::Ready && info.needs_update {
+                info.needs_update = false;
+                info.changed_at = tick;
+                true
+            } else {
+                false
+            }
+        };
+        if needs_ready {
+            r!(world.try_run_schedule(OnScreenReady(type_id)));
+        }
+    });
+    commands.run_schedule(ScreenScheduleLabel::from_id(schedule, type_id));
 }
 
 pub(crate) fn initial_screen(
