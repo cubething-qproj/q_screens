@@ -122,7 +122,7 @@ fn global_observers_survive_and_other_observers_die_with_their_entity() {
             let target = commands.spawn_empty().id();
             // Unparented: Bevy despawns it with its target, not q_screens' query.
             let entity_observer = commands
-                .spawn(Observer::new(|_: On<Add, Name>| {}).with_entity(target))
+                .spawn(Observer::new(|_: On<Add<Name>>| {}).with_entity(target))
                 .id();
             let parent = commands.spawn_empty().id();
             let child_observer = commands

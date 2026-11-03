@@ -106,7 +106,7 @@ mod general_api {
 pub use general_api::*;
 
 mod screens {
-    use bevy::{ecs::change_detection::Tick, utils::TypeIdMap};
+    use bevy::{ecs::change_detection::Tick, utils::TypeIdIndexMap};
 
     use super::*;
 
@@ -130,7 +130,7 @@ mod screens {
 
     /// The screen registry holds a map between the screen's type id and it's [ScreenId].
     #[derive(Resource, Debug, Deref, DerefMut, Default)]
-    pub struct ScreenRegistry(TypeIdMap<ScreenId>);
+    pub struct ScreenRegistry(TypeIdIndexMap<ScreenId>);
     impl ScreenRegistry {
         #[allow(missing_docs)]
         pub fn get(&self, id: &TypeId) -> Result<ScreenId, ScreenError> {
@@ -445,11 +445,12 @@ mod system_params {
 
         fn init_access(
             _state: &Self::State,
-            _system_meta: &mut bevy::ecs::system::SystemMeta,
-            component_access_set: &mut bevy::ecs::query::FilteredAccessSet,
+            system_meta: &mut bevy::ecs::system::SystemMeta,
+            system_access: &mut bevy::ecs::system::SystemAccess,
             world: &mut World,
         ) {
-            component_access_set
+            system_access
+                .require_shared_access::<Self>(system_meta)
                 .add_resource_read(world.component_id::<ScreenRegistry>().unwrap());
         }
 
@@ -519,11 +520,12 @@ mod system_params {
 
         fn init_access(
             _state: &Self::State,
-            _system_meta: &mut bevy::ecs::system::SystemMeta,
-            component_access_set: &mut bevy::ecs::query::FilteredAccessSet,
+            system_meta: &mut bevy::ecs::system::SystemMeta,
+            system_access: &mut bevy::ecs::system::SystemAccess,
             world: &mut World,
         ) {
-            component_access_set
+            system_access
+                .require_shared_access::<Self>(system_meta)
                 .add_resource_write(world.component_id::<ScreenRegistry>().unwrap());
         }
 
@@ -564,7 +566,7 @@ mod system_params {
         fn init_access(
             _state: &Self::State,
             _system_meta: &mut bevy::ecs::system::SystemMeta,
-            _component_access_set: &mut bevy::ecs::query::FilteredAccessSet,
+            _system_access: &mut bevy::ecs::system::SystemAccess,
             _world: &mut World,
         ) {
         }
