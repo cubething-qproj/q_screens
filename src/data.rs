@@ -565,10 +565,15 @@ mod system_params {
 
         fn init_access(
             _state: &Self::State,
-            _system_meta: &mut bevy::ecs::system::SystemMeta,
-            _system_access: &mut bevy::ecs::system::SystemAccess,
-            _world: &mut World,
+            system_meta: &mut bevy::ecs::system::SystemMeta,
+            system_access: &mut bevy::ecs::system::SystemAccess,
+            world: &mut World,
         ) {
+            // Since 0.20, declaring nothing means `SystemAccess::None` ("does not
+            // access the world at all"), but `get_param` reads `ScreenRegistry`.
+            system_access
+                .require_shared_access::<Self>(system_meta)
+                .add_resource_read(world.component_id::<ScreenRegistry>().unwrap());
         }
 
         unsafe fn get_param<'world, 'state>(
