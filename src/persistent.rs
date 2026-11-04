@@ -133,6 +133,9 @@ mod tests {
     fn assert_survives_anywhere<C: Bundle>(component: impl Fn() -> C) {
         let mut app = App::new();
         app.add_plugins(super::plugin);
+        // `PointerId`'s hooks (Bevy 0.20+) require the map `PickingPlugin` provides.
+        #[cfg(feature = "bevy_picking")]
+        app.init_resource::<bevy::picking::pointer::PointerMap>();
         let world = app.world_mut();
         let top_level = world.spawn(component()).id();
         let parent = world.spawn_empty().id();

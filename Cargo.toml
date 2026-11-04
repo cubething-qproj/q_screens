@@ -8,7 +8,7 @@ description = "Screens extension for bevy"
 
 [dependencies]
 # bevy
-bevy = { version = "0.19", default-features = false, features = ["default_app", "bevy_window"] }
+bevy = { version = "0.20", default-features = false, features = ["default_app", "bevy_window"] }
 # 0.12.2 uses syn 3, while Bevy's macro utilities use syn 2.
 encase = "=0.12.1"
 
@@ -18,7 +18,7 @@ thiserror = "2.0.12"
 strum = { version = "0.27.2", features = ["derive"] }
 
 [dev-dependencies]
-bevy_asset_loader = "0.27"
+bevy_asset_loader = "0.28"
 itertools = "0.14.0"
 
 # local
